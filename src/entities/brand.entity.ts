@@ -2,12 +2,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
+  JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
-  Index,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Product } from './product.entity';
@@ -32,19 +31,14 @@ export class Brand {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @ManyToOne(() => Category, (category) => category.brands, {
-    onDelete: 'CASCADE',
-    eager: true,
+  @ManyToMany(() => Category, (category) => category.brands, { eager: true })
+  @JoinTable({
+    name: 'brand_categories',
+    joinColumn: { name: 'brandId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'categoryId', referencedColumnName: 'id' },
   })
-  @JoinColumn({ name: 'categoryId' })
-  category!: Category;
+  categories!: Category[];
 
-  @Index()
-  @Column('uuid')
-  categoryId!: string;
-
-  @OneToMany(() => Product, (product) => product.brand, {
-    cascade: true,
-  })
+  @OneToMany(() => Product, (product) => product.brand, { cascade: true })
   products!: Product[];
 }

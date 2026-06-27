@@ -6,6 +6,11 @@ export class ProductColorDto {
   price: number;
 }
 
+export class ProductCategoryDto {
+  id: string;
+  name: string;
+}
+
 export class ProductResponseDto {
   id: string;
   name: string;
@@ -13,8 +18,7 @@ export class ProductResponseDto {
   basePrice: number;
   brandId: string;
   brandName: string;
-  categoryId: string;
-  categoryName: string;
+  categories: ProductCategoryDto[];
   colors: ProductColorDto[];
 }
 

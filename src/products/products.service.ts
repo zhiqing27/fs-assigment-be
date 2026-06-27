@@ -30,36 +30,33 @@ export class ProductsService {
     const qb = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('brand.category', 'category')
+      .leftJoinAndSelect('brand.categories', 'category')
       .leftJoinAndSelect('product.colors', 'color');
 
     if (name) {
-      qb.andWhere('product.name ILIKE :name', {
-        name: `%${name}%`,
-      });
+      qb.andWhere('product.name ILIKE :name', { name: `%${name}%` });
     }
 
     if (categoryId) {
-      qb.andWhere('category.id = :categoryId', {
-        categoryId,
-      });
+      qb.andWhere(
+        'EXISTS (SELECT 1 FROM brand_categories bc WHERE bc."brandId" = brand.id AND bc."categoryId" = :categoryId)',
+        { categoryId },
+      );
     }
 
-    if (brandId) {
-      qb.andWhere('brand.id = :brandId', {
-        brandId,
-      });
+    if (brandId?.length) {
+      qb.andWhere('brand.id IN (:...brandId)', { brandId });
     }
 
     if (color) {
-      qb.andWhere('color.name ILIKE :color', {
-        color: `%${color}%`,
-      });
+      qb.andWhere(
+        'EXISTS (SELECT 1 FROM product_colors pc WHERE pc."productId" = product.id AND pc.name ILIKE :color)',
+        { color: `%${color}%` },
+      );
     }
 
     const [products, total] = await qb
       .orderBy('product.name', 'ASC')
-      .addOrderBy('color.name', 'ASC')
       .skip(offset)
       .take(limit)
       .getManyAndCount();
@@ -81,8 +78,7 @@ export class ProductsService {
       basePrice: Number(product.basePrice),
       brandId: product.brand.id,
       brandName: product.brand.name,
-      categoryId: product.brand.category.id,
-      categoryName: product.brand.category.name,
+      categories: product.brand.categories.map((c) => ({ id: c.id, name: c.name })),
       colors: product.colors.map((pc) => ({
         id: pc.id,
         name: pc.name,
@@ -101,19 +97,21 @@ export class ProductsService {
   }
 
   async getBrands(
-    categoryId?: string,
-  ): Promise<{ id: string; name: string; categoryId: string }[]> {
-    return this.brandRepository.find({
-      select: {
-        id: true,
-        name: true,
-        categoryId: true,
-      },
-      where: categoryId ? { categoryId } : {},
-      order: {
-        name: 'ASC',
-      },
-    });
+    categoryId?: string[],
+  ): Promise<{ id: string; name: string; logoUrl: string | null }[]> {
+    const qb = this.brandRepository
+      .createQueryBuilder('brand')
+      .select(['brand.id', 'brand.name', 'brand.logoUrl'])
+      .orderBy('brand.name', 'ASC');
+
+    if (categoryId?.length) {
+      qb.andWhere(
+        'EXISTS (SELECT 1 FROM brand_categories bc WHERE bc."brandId" = brand.id AND bc."categoryId" IN (:...categoryId))',
+        { categoryId },
+      );
+    }
+
+    return qb.getMany();
   }
 
   async getColorsUnique(): Promise<{ name: string; colorCode: string }[]> {

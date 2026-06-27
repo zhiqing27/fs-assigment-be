@@ -11,7 +11,7 @@ import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {
   PENDING = 'pending',
-  DELIVERED = 'delivered',
+  COMPLETED = 'completed',
 }
 
 @Entity('orders')
@@ -41,9 +41,6 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-
-  @Column({ type: 'timestamp', nullable: true })
-  deliveredAt!: Date;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: true,

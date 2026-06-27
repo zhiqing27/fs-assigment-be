@@ -18,9 +18,12 @@ export class ProductsController {
 
   @Get('filters/brands')
   async getBrands(
-    @Query('categoryId') categoryId?: string,
-  ): Promise<{ id: string; name: string; categoryId: string }[]> {
-    return this.productsService.getBrands(categoryId);
+    @Query('categoryId') categoryId?: string | string[],
+  ): Promise<{ id: string; name: string; logoUrl: string | null }[]> {
+    const ids = categoryId
+      ? Array.isArray(categoryId) ? categoryId : [categoryId]
+      : undefined;
+    return this.productsService.getBrands(ids);
   }
 
   @Get('filters/colors')

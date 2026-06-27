@@ -8,17 +8,12 @@ import {
 } from 'typeorm';
 import { Order } from './order.entity';
 import { Product } from './product.entity';
+import { ProductColor } from './product-color.entity';
 
 @Entity('order_items')
 export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  selectedColor!: string;
-
-  @Column({ type: 'varchar', length: 7, nullable: true })
-  selectedColorCode!: string;
 
   @ManyToOne(() => Order, (order) => order.items, {
     onDelete: 'CASCADE',
@@ -40,4 +35,16 @@ export class OrderItem {
   @Index()
   @Column('uuid')
   productId!: string;
+
+  @ManyToOne(() => ProductColor, {
+    eager: true,
+    nullable: true,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'productColorId' })
+  productColor!: ProductColor | null;
+
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  productColorId!: string | null;
 }

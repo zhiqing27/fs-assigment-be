@@ -1,32 +1,30 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    OneToMany,
-    CreateDateColumn,
-    UpdateDateColumn,
-  } from 'typeorm';
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Brand } from './brand.entity';
 
-  @Entity('categories')
-  export class Category {
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
+@Entity('categories')
+export class Category {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
-    @Column({ type: 'varchar', length: 255, unique: true })
-    name!: string;
+  @Column({ type: 'varchar', length: 255, unique: true })
+  name!: string;
 
-    @Column({ type: 'text', nullable: true })
-    description!: string;
+  @Column({ type: 'text', nullable: true })
+  description!: string;
 
-    @CreateDateColumn()
-    createdAt!: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
 
-    @UpdateDateColumn()
-    updatedAt!: Date;
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
-    @OneToMany(() => Brand, (brand) => brand.category, {
-      cascade: true,
-    })
-    brands!: Brand[];
-  }
+  @ManyToMany(() => Brand, (brand) => brand.categories)
+  brands!: Brand[];
+}
