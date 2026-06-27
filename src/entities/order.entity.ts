@@ -1,71 +1,53 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    OneToMany,
-    CreateDateColumn,
-    UpdateDateColumn,
-  } from 'typeorm';
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
 import { OrderItem } from './order-item.entity';
 
-  export enum OrderStatus {
-    PENDING = 'pending',
-    PROCESSING = 'processing',
-    SHIPPED = 'shipped',
-    DELIVERED = 'delivered',
-    CANCELLED = 'cancelled',
-  }
-  
-  @Entity('orders')
-  export class Order {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-  
-    @Column({ type: 'varchar', length: 50, unique: true })
-    orderNumber: string;
-  
-    @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
-    status: OrderStatus;
-  
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    totalAmount: number;
-  
-    @Column({ type: 'integer' })
-    totalItems: number;
-  
-    @Column({ type: 'varchar', length: 255 })
-    customerName: string;
-  
-    @Column({ type: 'varchar', length: 255 })
-    customerEmail: string;
-  
-    @Column({ type: 'varchar', length: 20 })
-    customerPhone: string;
-  
-    @Column({ type: 'text' })
-    shippingAddress: string;
-  
-    @Column({ type: 'varchar', length: 10, nullable: true })
-    shippingZipCode: string;
-  
-    @Column({ type: 'varchar', length: 100, nullable: true })
-    shippingCity: string;
-  
-    @Column({ type: 'text', nullable: true })
-    notes: string;
-  
-    @CreateDateColumn()
-    createdAt: Date;
-  
-    @UpdateDateColumn()
-    updatedAt: Date;
-  
-    @Column({ type: 'timestamp', nullable: true })
-    deliveredAt: Date;
-  
-    @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
-      cascade: true,
-      eager: true,
-    })
-    items: OrderItem[];
-  }
+export enum OrderStatus {
+  PENDING = 'pending',
+  DELIVERED = 'delivered',
+}
+
+@Entity('orders')
+export class Order {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column({ type: 'varchar', length: 50, unique: true })
+  orderNumber!: string;
+
+  @Index()
+  @Column({ type: 'varchar', length: 36 })
+  clientId!: string;
+
+  @Index()
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
+  status!: OrderStatus;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  totalAmount!: number;
+
+  @Column({ type: 'integer' })
+  totalItems!: number;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  deliveredAt!: Date;
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+    cascade: true,
+    eager: true,
+  })
+  items!: OrderItem[];
+}

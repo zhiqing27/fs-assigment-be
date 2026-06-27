@@ -7,52 +7,56 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Brand } from './brand.entity';
 import { ProductColor } from './product-color.entity';
 import { OrderItem } from './order-item.entity';
+
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
+  @Index()
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  imageUrl: string;
+  imageUrl!: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  basePrice: number;
+  basePrice!: number;
 
   @Column({ type: 'integer', default: 0 })
-  totalStock: number;
+  totalStock!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => Brand, (brand) => brand.products, {
     onDelete: 'CASCADE',
     eager: true,
   })
   @JoinColumn({ name: 'brandId' })
-  brand: Brand;
+  brand!: Brand;
 
+  @Index()
   @Column('uuid')
-  brandId: string;
+  brandId!: string;
 
   @OneToMany(() => ProductColor, (color) => color.product, {
     cascade: true,
     eager: true,
   })
-  colors: ProductColor[];
+  colors!: ProductColor[];
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
-  orderItems: OrderItem[];
+  orderItems!: OrderItem[];
 }

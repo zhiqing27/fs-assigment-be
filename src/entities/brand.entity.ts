@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Product } from './product.entity';
@@ -14,35 +15,36 @@ import { Product } from './product.entity';
 @Entity('brands')
 export class Brand {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  logoUrl: string;
+  logoUrl!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ManyToOne(() => Category, (category) => category.brands, {
     onDelete: 'CASCADE',
     eager: true,
   })
   @JoinColumn({ name: 'categoryId' })
-  category: Category;
+  category!: Category;
 
+  @Index()
   @Column('uuid')
-  categoryId: string;
+  categoryId!: string;
 
   @OneToMany(() => Product, (product) => product.brand, {
     cascade: true,
   })
-  products: Product[];
+  products!: Product[];
 }

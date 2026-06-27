@@ -11,22 +11,22 @@ import { Brand } from './brand.entity';
   @Entity('categories')
   export class Category {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
-  
+    id!: string;
+
     @Column({ type: 'varchar', length: 255, unique: true })
-    name: string;
-  
+    name!: string;
+
     @Column({ type: 'text', nullable: true })
-    description: string;
-  
+    description!: string;
+
     @CreateDateColumn()
-    createdAt: Date;
-  
+    createdAt!: Date;
+
     @UpdateDateColumn()
-    updatedAt: Date;
-  
+    updatedAt!: Date;
+
     @OneToMany(() => Brand, (brand) => brand.category, {
       cascade: true,
     })
-    brands: Brand[];
+    brands!: Brand[];
   }
