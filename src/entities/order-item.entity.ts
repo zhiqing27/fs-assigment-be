@@ -7,7 +7,6 @@ import {
   Index,
 } from 'typeorm';
 import { Order } from './order.entity';
-import { Product } from './product.entity';
 import { ProductColor } from './product-color.entity';
 
 @Entity('order_items')
@@ -25,16 +24,6 @@ export class OrderItem {
   @Index()
   @Column('uuid')
   orderId!: string;
-
-  @ManyToOne(() => Product, (product) => product.orderItems, {
-    eager: false,
-  })
-  @JoinColumn({ name: 'productId' })
-  product!: Product;
-
-  @Index()
-  @Column('uuid')
-  productId!: string;
 
   @ManyToOne(() => ProductColor, {
     eager: false,

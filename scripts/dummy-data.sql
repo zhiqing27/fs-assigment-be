@@ -47,22 +47,22 @@ ON CONFLICT DO NOTHING;
 -- 3. PRODUCTS (15) — price & stock live on product_colors
 -- =====================================================
 -- categoryId: Smartphones=f47ac10b-...-479 Tablets=f47ac10b-...-480 Laptops=f47ac10b-...-481
-INSERT INTO products (id, name, description, "imageUrl", "brandId", "categoryId", "createdAt", "updatedAt") VALUES
-('b47ac10b-58cc-4372-a567-0e02b2c3d479', 'iPhone 15 Pro',   'Latest iPhone with A17 Pro chip',        'https://placehold.co/300x400?text=iPhone+15+Pro',   'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d480', 'iPhone 15',       'Affordable flagship iPhone',             'https://placehold.co/300x400?text=iPhone+15',       'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d481', 'iPhone 14',       'Previous generation iPhone',             'https://placehold.co/300x400?text=iPhone+14',       'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d482', 'Galaxy S24 Ultra','Premium flagship Android phone',         'https://placehold.co/300x400?text=Galaxy+S24+Ultra','a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d483', 'Galaxy S24',      'Flagship Samsung phone',                 'https://placehold.co/300x400?text=Galaxy+S24',      'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d484', 'Pixel 8 Pro',     'Premium Google phone with AI features',  'https://placehold.co/300x400?text=Pixel+8+Pro',     'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d485', 'Pixel 8',         'Affordable Google Pixel phone',          'https://placehold.co/300x400?text=Pixel+8',         'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d486', 'Xiaomi 14 Ultra', 'High-end Xiaomi with excellent camera',  'https://placehold.co/300x400?text=Xiaomi+14+Ultra', 'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d487', 'Xiaomi 14',       'Mid-range Xiaomi smartphone',            'https://placehold.co/300x400?text=Xiaomi+14',       'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d488', 'OnePlus 12',      'Fast and reliable OnePlus phone',        'https://placehold.co/300x400?text=OnePlus+12',      'a47ac10b-58cc-4372-a567-0e02b2c3d483', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d489', 'iPad Pro 12.9"',  'Premium Apple tablet with M2 chip',      'https://placehold.co/300x400?text=iPad+Pro',        'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d490', 'iPad Air',        'Mid-range Apple tablet',                 'https://placehold.co/300x400?text=iPad+Air',        'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d491', 'Galaxy Tab S9',   'Premium Samsung tablet',                 'https://placehold.co/300x400?text=Galaxy+Tab+S9',   'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d492', 'MacBook Pro 16"', 'Premium Apple laptop',                   'https://placehold.co/300x400?text=MacBook+Pro+16',  'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d493', 'Dell XPS 15',     'High-performance Dell laptop',           'https://placehold.co/300x400?text=Dell+XPS+15',     'a47ac10b-58cc-4372-a567-0e02b2c3d487', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW())
+INSERT INTO products (id, "productCode", name, description, "imageUrl", "brandId", "categoryId", "createdAt", "updatedAt") VALUES
+('b47ac10b-58cc-4372-a567-0e02b2c3d479', 'P0001-001', 'iPhone 15 Pro',   'Latest iPhone with A17 Pro chip',        'https://placehold.co/300x400?text=iPhone+15+Pro',   'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d480', 'P0001-002', 'iPhone 15',       'Affordable flagship iPhone',             'https://placehold.co/300x400?text=iPhone+15',       'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d481', 'P0001-003', 'iPhone 14',       'Previous generation iPhone',             'https://placehold.co/300x400?text=iPhone+14',       'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d482', 'P0001-004', 'Galaxy S24 Ultra','Premium flagship Android phone',         'https://placehold.co/300x400?text=Galaxy+S24+Ultra','a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d483', 'P0001-005', 'Galaxy S24',      'Flagship Samsung phone',                 'https://placehold.co/300x400?text=Galaxy+S24',      'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d484', 'P0001-006', 'Pixel 8 Pro',     'Premium Google phone with AI features',  'https://placehold.co/300x400?text=Pixel+8+Pro',     'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d485', 'P0001-007', 'Pixel 8',         'Affordable Google Pixel phone',          'https://placehold.co/300x400?text=Pixel+8',         'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d486', 'P0001-008', 'Xiaomi 14 Ultra', 'High-end Xiaomi with excellent camera',  'https://placehold.co/300x400?text=Xiaomi+14+Ultra', 'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d487', 'P0001-009', 'Xiaomi 14',       'Mid-range Xiaomi smartphone',            'https://placehold.co/300x400?text=Xiaomi+14',       'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d488', 'P0001-010', 'OnePlus 12',      'Fast and reliable OnePlus phone',        'https://placehold.co/300x400?text=OnePlus+12',      'a47ac10b-58cc-4372-a567-0e02b2c3d483', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d489', 'P0001-011', 'iPad Pro 12.9"',  'Premium Apple tablet with M2 chip',      'https://placehold.co/300x400?text=iPad+Pro',        'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d490', 'P0001-012', 'iPad Air',        'Mid-range Apple tablet',                 'https://placehold.co/300x400?text=iPad+Air',        'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d491', 'P0001-013', 'Galaxy Tab S9',   'Premium Samsung tablet',                 'https://placehold.co/300x400?text=Galaxy+Tab+S9',   'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d492', 'P0001-014', 'MacBook Pro 16"', 'Premium Apple laptop',                   'https://placehold.co/300x400?text=MacBook+Pro+16',  'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d493', 'P0001-015', 'Dell XPS 15',     'High-performance Dell laptop',           'https://placehold.co/300x400?text=Dell+XPS+15',     'a47ac10b-58cc-4372-a567-0e02b2c3d487', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
@@ -171,17 +171,17 @@ ON CONFLICT DO NOTHING;
 -- =====================================================
 -- 6. ORDER ITEMS — productColorId FK to product_colors
 -- =====================================================
-INSERT INTO order_items (id, "orderId", "productId", "productColorId") VALUES
-('e47ac10b-58cc-4372-a567-0e02b2c3d479', 'd47ac10b-58cc-4372-a567-0e02b2c3d479', 'b47ac10b-58cc-4372-a567-0e02b2c3d479', 'c47ac10b-58cc-4372-a567-0e02b2c3d479'),  -- iPhone 15 Pro / Titanium Black
-('e47ac10b-58cc-4372-a567-0e02b2c3d480', 'd47ac10b-58cc-4372-a567-0e02b2c3d480', 'b47ac10b-58cc-4372-a567-0e02b2c3d480', 'c47ac10b-58cc-4372-a567-0e02b2c3d484'),  -- iPhone 15 / Blue
-('e47ac10b-58cc-4372-a567-0e02b2c3d481', 'd47ac10b-58cc-4372-a567-0e02b2c3d481', 'b47ac10b-58cc-4372-a567-0e02b2c3d482', 'c47ac10b-58cc-4372-a567-0e02b2c3d487'),  -- Galaxy S24 Ultra / Phantom Black
-('e47ac10b-58cc-4372-a567-0e02b2c3d482', 'd47ac10b-58cc-4372-a567-0e02b2c3d482', 'b47ac10b-58cc-4372-a567-0e02b2c3d486', 'c47ac10b-58cc-4372-a567-0e02b2c3d494'),  -- Xiaomi 14 Ultra / Pearl White
-('e47ac10b-58cc-4372-a567-0e02b2c3d483', 'd47ac10b-58cc-4372-a567-0e02b2c3d483', 'b47ac10b-58cc-4372-a567-0e02b2c3d492', 'c47ac10b-58cc-4372-a567-0e02b2c3d504'),  -- MacBook Pro / Space Black
-('e47ac10b-58cc-4372-a567-0e02b2c3d484', 'd47ac10b-58cc-4372-a567-0e02b2c3d484', 'b47ac10b-58cc-4372-a567-0e02b2c3d484', 'c47ac10b-58cc-4372-a567-0e02b2c3d491'),  -- Pixel 8 Pro / Obsidian
-('e47ac10b-58cc-4372-a567-0e02b2c3d485', 'd47ac10b-58cc-4372-a567-0e02b2c3d485', 'b47ac10b-58cc-4372-a567-0e02b2c3d493', 'c47ac10b-58cc-4372-a567-0e02b2c3d529'),  -- Dell XPS 15 / Platinum Silver
-('e47ac10b-58cc-4372-a567-0e02b2c3d486', 'd47ac10b-58cc-4372-a567-0e02b2c3d486', 'b47ac10b-58cc-4372-a567-0e02b2c3d488', 'c47ac10b-58cc-4372-a567-0e02b2c3d522'),  -- OnePlus 12 / Silky Black
-('e47ac10b-58cc-4372-a567-0e02b2c3d487', 'd47ac10b-58cc-4372-a567-0e02b2c3d487', 'b47ac10b-58cc-4372-a567-0e02b2c3d487', 'c47ac10b-58cc-4372-a567-0e02b2c3d518'),  -- Xiaomi 14 / Black
-('e47ac10b-58cc-4372-a567-0e02b2c3d488', 'd47ac10b-58cc-4372-a567-0e02b2c3d488', 'b47ac10b-58cc-4372-a567-0e02b2c3d483', 'c47ac10b-58cc-4372-a567-0e02b2c3d511')   -- Galaxy S24 / Onyx Black
+INSERT INTO order_items (id, "orderId", "productColorId") VALUES
+('e47ac10b-58cc-4372-a567-0e02b2c3d479', 'd47ac10b-58cc-4372-a567-0e02b2c3d479', 'c47ac10b-58cc-4372-a567-0e02b2c3d479'),  -- iPhone 15 Pro / Titanium Black
+('e47ac10b-58cc-4372-a567-0e02b2c3d480', 'd47ac10b-58cc-4372-a567-0e02b2c3d480', 'c47ac10b-58cc-4372-a567-0e02b2c3d484'),  -- iPhone 15 / Blue
+('e47ac10b-58cc-4372-a567-0e02b2c3d481', 'd47ac10b-58cc-4372-a567-0e02b2c3d481', 'c47ac10b-58cc-4372-a567-0e02b2c3d487'),  -- Galaxy S24 Ultra / Phantom Black
+('e47ac10b-58cc-4372-a567-0e02b2c3d482', 'd47ac10b-58cc-4372-a567-0e02b2c3d482', 'c47ac10b-58cc-4372-a567-0e02b2c3d494'),  -- Xiaomi 14 Ultra / Pearl White
+('e47ac10b-58cc-4372-a567-0e02b2c3d483', 'd47ac10b-58cc-4372-a567-0e02b2c3d483', 'c47ac10b-58cc-4372-a567-0e02b2c3d504'),  -- MacBook Pro / Space Black
+('e47ac10b-58cc-4372-a567-0e02b2c3d484', 'd47ac10b-58cc-4372-a567-0e02b2c3d484', 'c47ac10b-58cc-4372-a567-0e02b2c3d491'),  -- Pixel 8 Pro / Obsidian
+('e47ac10b-58cc-4372-a567-0e02b2c3d485', 'd47ac10b-58cc-4372-a567-0e02b2c3d485', 'c47ac10b-58cc-4372-a567-0e02b2c3d529'),  -- Dell XPS 15 / Platinum Silver
+('e47ac10b-58cc-4372-a567-0e02b2c3d486', 'd47ac10b-58cc-4372-a567-0e02b2c3d486', 'c47ac10b-58cc-4372-a567-0e02b2c3d522'),  -- OnePlus 12 / Silky Black
+('e47ac10b-58cc-4372-a567-0e02b2c3d487', 'd47ac10b-58cc-4372-a567-0e02b2c3d487', 'c47ac10b-58cc-4372-a567-0e02b2c3d518'),  -- Xiaomi 14 / Black
+('e47ac10b-58cc-4372-a567-0e02b2c3d488', 'd47ac10b-58cc-4372-a567-0e02b2c3d488', 'c47ac10b-58cc-4372-a567-0e02b2c3d511')   -- Galaxy S24 / Onyx Black
 ON CONFLICT DO NOTHING;
 
 -- =====================================================

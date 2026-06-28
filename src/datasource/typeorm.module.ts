@@ -18,7 +18,7 @@ import { Global, Module } from '@nestjs/common';
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DATABASE,
-            ssl: { rejectUnauthorized: false },
+            ssl: process.env.MODE !== 'DEV' ? { rejectUnauthorized: false } : false,
             synchronize: process.env.MODE === 'DEV',
             entities: [`${__dirname}/../**/**.entity{.ts,.js}`],
           });

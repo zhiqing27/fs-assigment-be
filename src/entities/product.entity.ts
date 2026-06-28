@@ -12,12 +12,14 @@ import {
 import { Brand } from './brand.entity';
 import { Category } from './category.entity';
 import { ProductColor } from './product-color.entity';
-import { OrderItem } from './order-item.entity';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
+
+  @Column({ type: 'varchar', length: 20, unique: true })
+  productCode!: string;
 
   @Index()
   @Column({ type: 'varchar', length: 255 })
@@ -63,6 +65,4 @@ export class Product {
   })
   colors!: ProductColor[];
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
-  orderItems!: OrderItem[];
 }
