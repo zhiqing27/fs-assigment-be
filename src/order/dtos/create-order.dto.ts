@@ -1,8 +1,9 @@
-import { IsUUID } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateOrderDto {
+  @IsString()
   productColorId!: string;
 
-  @IsUUID('4')
+  @IsString()
   clientId!: string;
 }
