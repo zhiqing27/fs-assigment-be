@@ -83,7 +83,7 @@ export class ProductsService {
 
   async getCategories(): Promise<{ id: string; name: string }[]> {
     return this.categoryRepository.find({
-      select: ['id', 'name'],
+      select: { id: true, name: true },
       order: { name: 'ASC' },
     });
   }
@@ -108,7 +108,7 @@ export class ProductsService {
 
   async getColors(): Promise<{ name: string; colorCode: string }[]> {
     return this.colorRepository.find({
-      select: ['name', 'colorCode', 'id'],
+      select: { id: true, name: true, colorCode: true },
       order: { name: 'ASC' },
     });
   }
