@@ -7,15 +7,12 @@ export class FindProductsQueryDto {
   name?: string;
 
   @IsOptional()
-  @IsUUID('4')
   categoryId?: string;
 
   @IsOptional()
-  @IsUUID('4')
   brandId?: string;
 
   @IsOptional()
-  @IsUUID('4')
   color?: string;
 
   @IsOptional()

@@ -29,12 +29,6 @@ export class Product {
   @Column({ type: 'varchar', length: 255, nullable: true })
   imageUrl!: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  basePrice!: number;
-
-  @Column({ type: 'integer', default: 0 })
-  totalStock!: number;
-
   @CreateDateColumn()
   createdAt!: Date;
 

@@ -1,25 +1,18 @@
-export class ProductColorDto {
-  id: string;
-  name: string;
-  colorCode: string;
-  stock: number;
+export class ProductListingItemDto {
+  productColorId: string;
+  productId: string;
+  name: string; 
   price: number;
-}
-
-export class ProductResponseDto {
-  id: string;
-  name: string;
   imageUrl: string;
-  basePrice: number;
+  stock: number;
   brandId: string;
   brandName: string;
   categoryId: string;
   categoryName: string;
-  colors: ProductColorDto[];
 }
 
 export class FindProductsResponseDto {
-  data: ProductResponseDto[];
+  data: ProductListingItemDto[];
   total: number;
   limit: number;
   offset: number;

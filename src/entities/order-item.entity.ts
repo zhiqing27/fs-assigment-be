@@ -27,7 +27,7 @@ export class OrderItem {
   orderId!: string;
 
   @ManyToOne(() => Product, (product) => product.orderItems, {
-    eager: true,
+    eager: false,
   })
   @JoinColumn({ name: 'productId' })
   product!: Product;
@@ -37,7 +37,7 @@ export class OrderItem {
   productId!: string;
 
   @ManyToOne(() => ProductColor, {
-    eager: true,
+    eager: false,
     nullable: true,
     onDelete: 'RESTRICT',
   })

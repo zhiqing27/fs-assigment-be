@@ -1,98 +1,202 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Fullstack Assessment — NestJS Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Setup
 
 ```bash
-$ npm install
+cp .env.example .env   # fill in DB credentials
+npm install
+npm run start:dev
 ```
 
-## Compile and run the project
-
+Seed the database:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+psql -U assessment_user -d fullstack_assessment < scripts/dummy-data.sql
 ```
 
-## Run tests
+All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 
-```bash
-# unit tests
-$ npm run test
+---
 
-# e2e tests
-$ npm run test:e2e
+## Database Schema
 
-# test coverage
-$ npm run test:cov
+### Design decisions
+
+- **Price and stock live on `product_colors`, not `products`.**  
+  Each product variant (color) has its own price and stock count. There is no aggregate stock on the product level — the listing page queries `product_colors` directly, one card per variant.
+
+- **One order = one product-color variant.**  
+  `orders.totalItems` is always 1. `order_items` exists as a normalised join so the schema stays extensible, but currently each order has exactly one row in `order_items`.
+
+- **FCFS ordering is enforced in the DB.**  
+  `PATCH /order/:id/complete` acquires a `SELECT FOR UPDATE` lock on the `orders` row (without joins, to avoid the Postgres outer-join restriction), then separately locks the `product_colors` row before decrementing stock. Concurrent completions queue at the DB level.
+
+---
+
+### Tables
+
+#### `categories`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| name | varchar(255) | unique |
+| description | text | nullable |
+
+#### `brands`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| name | varchar(255) | |
+| description | text | nullable |
+| logoUrl | varchar(255) | nullable |
+
+#### `brand_categories` *(junction)*
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| brandId | uuid FK → brands | CASCADE delete |
+| categoryId | uuid FK → categories | CASCADE delete |
+
+#### `colors`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| name | varchar(100) | indexed |
+| colorCode | varchar(7) | e.g. `#4A90E2` |
+
+#### `products`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| name | varchar(255) | indexed |
+| description | text | nullable |
+| imageUrl | varchar(255) | nullable |
+| brandId | uuid FK → brands | CASCADE delete |
+| categoryId | uuid FK → categories | RESTRICT delete |
+
+#### `product_colors` *(variant rows — one per product × color)*
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| productId | uuid FK → products | CASCADE delete |
+| colorId | uuid FK → colors | RESTRICT delete |
+| price | decimal(10,2) | variant price |
+| stock | integer | decremented on order complete |
+
+#### `orders`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| orderNumber | varchar(50) | unique, human-readable e.g. `ORD-1234-AB12` |
+| clientId | varchar(36) | UUID string, indexed |
+| status | enum | `pending` \| `completed` |
+| totalAmount | decimal(10,2) | snapshot of price at order time |
+| totalItems | integer | always 1 in current design |
+
+#### `order_items`
+| column | type | notes |
+|---|---|---|
+| id | uuid PK | |
+| orderId | uuid FK → orders | CASCADE delete |
+| productId | uuid FK → products | |
+| productColorId | uuid FK → product_colors | RESTRICT delete, nullable |
+
+---
+
+### Entity relationship
+
+```
+categories ←──── brand_categories ────→ brands
+                                           │
+                                        products
+                                           │
+                              product_colors (price, stock)
+                                     ↑         ↑
+                              colorId       productId
+                              (colors)
+                                    
+orders ──── order_items ──→ products
+                    └──→ product_colors
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## API
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+All responses are wrapped:
+```json
+{ "success": true, "data": { ... }, "timestamp": "..." }
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Products
 
-## Resources
+| method | path | description |
+|---|---|---|
+| GET | `/products` | list product-color variants (paginated) |
+| GET | `/products/filters/categories` | distinct categories |
+| GET | `/products/filters/brands` | brands, optionally filtered by `?categoryId=` |
+| GET | `/products/filters/colors` | distinct colors |
 
-Check out a few resources that may come in handy when working with NestJS:
+`GET /products` query params: `name`, `categoryId`, `brandId`, `color` (colorId), `limit` (default 10), `offset` (default 0).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Response item shape:
+```json
+{
+  "productColorId": "uuid",
+  "productId": "uuid",
+  "name": "iPhone 15 Pro (Black)",
+  "price": 999.99,
+  "imageUrl": "https://...",
+  "stock": 30,
+  "brandId": "uuid",
+  "brandName": "Apple",
+  "categoryId": "uuid",
+  "categoryName": "Smartphones"
+}
+```
 
-## Support
+### Orders
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| method | path | headers | description |
+|---|---|---|---|
+| POST | `/order` | `x-client-id` not needed (in body) | place order |
+| GET | `/order` | `x-client-id: <uuid>` | list client's orders (paginated) |
+| PATCH | `/order/:id/complete` | — | complete order, decrement stock |
 
-## Stay in touch
+`POST /order` body:
+```json
+{ "productColorId": "uuid", "clientId": "uuid" }
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+`GET /order` response item:
+```json
+{
+  "id": "uuid",
+  "orderId": "ORD-1234-AB12",
+  "productId": "uuid",
+  "productName": "iPhone 15 Pro",
+  "productColor": "Black",
+  "currentStock": 29,
+  "status": "pending",
+  "createdAt": "2026-06-28T..."
+}
+```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Auth
+
+Every request requires:
+```
+x-api-key: <value from API_KEY env var>
+```
+
+CORS allowed origins are set via `ALLOWED_ORIGINS` (comma-separated) in `.env`.
+
+---
+
+## Test client IDs (from seed data)
+
+```
+clientId A: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa  (5 sample orders)
+clientId B: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb  (5 sample orders)
+```

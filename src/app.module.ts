@@ -5,11 +5,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { ApiKeyGuard } from './common/guards/api-key.guard';
+import { OrderModule } from './order/order.module';
 
 require('dotenv').config();
 
 @Module({
-  imports: [TypeOrmModule, ProductsModule],
+  imports: [TypeOrmModule, ProductsModule, OrderModule],
   controllers: [AppController],
   providers: [
     AppService,
