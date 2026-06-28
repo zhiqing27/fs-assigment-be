@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, Headers, BadRequestException } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { FindOrdersQueryDto } from './dtos/find-orders-query.dto';
@@ -14,6 +14,7 @@ export class OrderController {
 
   @Get()
   findAll(@Headers('x-client-id') clientId: string, @Query() query: FindOrdersQueryDto) {
+    if (!clientId) throw new BadRequestException('x-client-id header required');
     return this.orderService.findAll(clientId, query);
   }
 
