@@ -3,32 +3,49 @@
 ## Setup
 
 ```bash
-cp .env.example .env   # fill in DB credentials
 npm install
 npm run start:dev
 ```
 
-Seed the database:
+Seed the database (after first boot creates schema):
+
 ```bash
-psql -U assessment_user -d fullstack_assessment < scripts/dummy-data.sql
+PGSSLMODE=require psql -h <host> -U <user> -d fullstack_assessment < scripts/dummy-data.sql
 ```
 
 All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 
 ---
 
+## Environment Variables
+
+| variable | description |
+|---|---|
+| `POSTGRES_HOST` | DB host |
+| `POSTGRES_PORT` | DB port (default 5432) |
+| `POSTGRES_USER` | DB username |
+| `POSTGRES_PASSWORD` | DB password |
+| `POSTGRES_DATABASE` | DB name |
+| `PGSSLMODE` | Set to `require` for Neon/cloud DBs |
+| `PORT` | API port (default 3000) |
+| `MODE` | `DEV` enables schema auto-sync; anything else disables it |
+| `API_KEY` | Required header value for all requests |
+| `ALLOWED_ORIGINS` | Comma-separated CORS origins e.g. `http://localhost:5173` |
+
+---
+
 ## Database Schema
 
-### Design decisions
+### Design Decisions
 
 - **Price and stock live on `product_colors`, not `products`.**  
-  Each product variant (color) has its own price and stock count. There is no aggregate stock on the product level — the listing page queries `product_colors` directly, one card per variant.
+  Each variant (color) has its own price and stock. The listing page queries `product_colors` directly — one card per variant.
 
 - **One order = one product-color variant.**  
-  `orders.totalItems` is always 1. `order_items` exists as a normalised join so the schema stays extensible, but currently each order has exactly one row in `order_items`.
+  Each order has exactly one `order_items` row. `order_items` exists as a normalised join for future extensibility.
 
-- **FCFS ordering is enforced in the DB.**  
-  `PATCH /order/:id/complete` acquires a `SELECT FOR UPDATE` lock on the `orders` row (without joins, to avoid the Postgres outer-join restriction), then separately locks the `product_colors` row before decrementing stock. Concurrent completions queue at the DB level.
+- **FCFS stock control via DB-level locking.**  
+  `PATCH /order/:id/complete` uses `SELECT FOR UPDATE` (via `createQueryBuilder` to avoid the Postgres outer-join restriction), locks the `product_colors` row, checks stock ≥ 1, then decrements. Concurrent requests queue at the DB.
 
 ---
 
@@ -55,6 +72,7 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | id | uuid PK | |
 | brandId | uuid FK → brands | CASCADE delete |
 | categoryId | uuid FK → categories | CASCADE delete |
+| | | unique composite `(brandId, categoryId)` |
 
 #### `colors`
 | column | type | notes |
@@ -70,10 +88,10 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | name | varchar(255) | indexed |
 | description | text | nullable |
 | imageUrl | varchar(255) | nullable |
-| brandId | uuid FK → brands | CASCADE delete |
-| categoryId | uuid FK → categories | RESTRICT delete |
+| brandId | uuid FK → brands | CASCADE delete, indexed |
+| categoryId | uuid FK → categories | RESTRICT delete, indexed |
 
-#### `product_colors` *(variant rows — one per product × color)*
+#### `product_colors` *(one row per product × color variant)*
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
@@ -81,48 +99,50 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | colorId | uuid FK → colors | RESTRICT delete |
 | price | decimal(10,2) | variant price |
 | stock | integer | decremented on order complete |
+| | | unique composite `(productId, colorId)` |
 
 #### `orders`
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
-| orderNumber | varchar(50) | unique, human-readable e.g. `ORD-1234-AB12` |
-| clientId | varchar(36) | UUID string, indexed |
-| status | enum | `pending` \| `completed` |
-| totalAmount | decimal(10,2) | snapshot of price at order time |
-| totalItems | integer | always 1 in current design |
+| orderNumber | varchar(50) | unique e.g. `ORD-1234-AB12` |
+| clientId | varchar(36) | composite index with `createdAt` |
+| status | enum | `pending` \| `completed`, indexed |
+| totalAmount | decimal(10,2) | price snapshot at order time |
+| totalItems | integer | always 1 |
+| createdAt | timestamp | used for FCFS ordering |
 
 #### `order_items`
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
-| orderId | uuid FK → orders | CASCADE delete |
-| productId | uuid FK → products | |
-| productColorId | uuid FK → product_colors | RESTRICT delete, nullable |
+| orderId | uuid FK → orders | CASCADE delete, indexed |
+| productId | uuid FK → products | indexed |
+| productColorId | uuid FK → product_colors | RESTRICT delete, indexed, nullable |
 
 ---
 
-### Entity relationship
+### Entity Relationship
 
 ```
-categories ←──── brand_categories ────→ brands
-                                           │
-                                        products
-                                           │
-                              product_colors (price, stock)
-                                     ↑         ↑
-                              colorId       productId
-                              (colors)
-                                    
+categories ←── brand_categories ──→ brands
+                                       │
+                                    products
+                                       │
+                          product_colors (price, stock)
+                               ↑              ↑
+                           colorId        productId
+                           (colors)
+
 orders ──── order_items ──→ products
-                    └──→ product_colors
+                  └──→ product_colors
 ```
 
 ---
 
 ## API
 
-All responses are wrapped:
+All responses wrapped:
 ```json
 { "success": true, "data": { ... }, "timestamp": "..." }
 ```
@@ -131,14 +151,23 @@ All responses are wrapped:
 
 | method | path | description |
 |---|---|---|
-| GET | `/products` | list product-color variants (paginated) |
-| GET | `/products/filters/categories` | distinct categories |
-| GET | `/products/filters/brands` | brands, optionally filtered by `?categoryId=` |
-| GET | `/products/filters/colors` | distinct colors |
+| GET | `/products` | list product-color variants, paginated |
+| GET | `/products/filters/categories` | all categories |
+| GET | `/products/filters/brands` | brands, optionally `?categoryId=` |
+| GET | `/products/filters/colors` | all colors |
 
-`GET /products` query params: `name`, `categoryId`, `brandId`, `color` (colorId), `limit` (default 10), `offset` (default 0).
+**`GET /products` query params**
 
-Response item shape:
+| param | type | description |
+|---|---|---|
+| `name` | string | partial match (case-insensitive) |
+| `categoryId` | uuid | filter by category |
+| `brandId` | uuid | filter by brand |
+| `color` | uuid | filter by colorId |
+| `limit` | number | default 10, max 100 |
+| `offset` | number | default 0 |
+
+**Response item:**
 ```json
 {
   "productColorId": "uuid",
@@ -156,18 +185,20 @@ Response item shape:
 
 ### Orders
 
-| method | path | headers | description |
+| method | path | header | description |
 |---|---|---|---|
-| POST | `/order` | `x-client-id` not needed (in body) | place order |
-| GET | `/order` | `x-client-id: <uuid>` | list client's orders (paginated) |
+| POST | `/order` | — | place order |
+| GET | `/order` | `x-client-id: <uuid>` | list client's orders, paginated |
 | PATCH | `/order/:id/complete` | — | complete order, decrement stock |
 
-`POST /order` body:
+**`POST /order` body:**
 ```json
 { "productColorId": "uuid", "clientId": "uuid" }
 ```
 
-`GET /order` response item:
+**`GET /order` query params:** `limit`, `offset`
+
+**`GET /order` response item:**
 ```json
 {
   "id": "uuid",
@@ -187,14 +218,12 @@ Response item shape:
 
 Every request requires:
 ```
-x-api-key: <value from API_KEY env var>
+x-api-key: <API_KEY value>
 ```
-
-CORS allowed origins are set via `ALLOWED_ORIGINS` (comma-separated) in `.env`.
 
 ---
 
-## Test client IDs (from seed data)
+## Seed Data Client IDs
 
 ```
 clientId A: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa  (5 sample orders)

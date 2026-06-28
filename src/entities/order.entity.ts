@@ -14,6 +14,7 @@ export enum OrderStatus {
   COMPLETED = 'completed',
 }
 
+@Index(['clientId', 'createdAt'])
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
@@ -22,7 +23,6 @@ export class Order {
   @Column({ type: 'varchar', length: 50, unique: true })
   orderNumber!: string;
 
-  @Index()
   @Column({ type: 'varchar', length: 36 })
   clientId!: string;
 

@@ -7,10 +7,13 @@ import {
   UpdateDateColumn,
   JoinColumn,
   Index,
+  Unique,
 } from 'typeorm';
 import { Product } from './product.entity';
 import { Color } from './color.entity';
 
+@Unique(['productId', 'colorId'])
+@Index(['productId', 'colorId'])
 @Entity('product_colors')
 export class ProductColor {
   @PrimaryGeneratedColumn('uuid')
@@ -35,7 +38,6 @@ export class ProductColor {
   @JoinColumn({ name: 'productId' })
   product!: Product;
 
-  @Index()
   @Column('uuid')
   productId!: string;
 
@@ -46,7 +48,6 @@ export class ProductColor {
   @JoinColumn({ name: 'colorId' })
   color!: Color;
 
-  @Index()
   @Column('uuid')
   colorId!: string;
 }

@@ -6,10 +6,13 @@ import {
   Column,
   Index,
   CreateDateColumn,
+  Unique,
 } from 'typeorm';
 import { Brand } from './brand.entity';
 import { Category } from './category.entity';
 
+@Unique(['brandId', 'categoryId'])
+@Index(['brandId', 'categoryId'])
 @Entity('brand_categories')
 export class BrandCategory {
   @PrimaryGeneratedColumn('uuid')
@@ -19,7 +22,6 @@ export class BrandCategory {
   @JoinColumn({ name: 'brandId' })
   brand!: Brand;
 
-  @Index()
   @Column('uuid')
   brandId!: string;
 
@@ -27,7 +29,6 @@ export class BrandCategory {
   @JoinColumn({ name: 'categoryId' })
   category!: Category;
 
-  @Index()
   @Column('uuid')
   categoryId!: string;
 
