@@ -10,6 +10,10 @@ npm run start:dev
 Seed the database (after first boot creates schema):
 
 ```bash
+# local (no SSL)
+psql -U assessment_user -d fullstack_assessment < scripts/dummy-data.sql
+
+# cloud / prod (SSL)
 PGSSLMODE=require psql -h <host> -U <user> -d fullstack_assessment < scripts/dummy-data.sql
 ```
 
@@ -26,9 +30,8 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | `POSTGRES_USER` | DB username |
 | `POSTGRES_PASSWORD` | DB password |
 | `POSTGRES_DATABASE` | DB name |
-| `PGSSLMODE` | Set to `require` for Neon/cloud DBs |
 | `PORT` | API port (default 3000) |
-| `MODE` | `DEV` enables schema auto-sync; anything else disables it |
+| `MODE` | `DEV` = local (no SSL, schema auto-sync); anything else = prod (SSL enabled) |
 | `API_KEY` | Required header value for all requests |
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins e.g. `http://localhost:5173` |
 
@@ -42,7 +45,7 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
   Each variant (color) has its own price and stock. The listing page queries `product_colors` directly — one card per variant.
 
 - **One order = one product-color variant.**  
-  Each order has exactly one `order_items` row. `order_items` exists as a normalised join for future extensibility.
+  Each order has exactly one `order_items` row with only `productColorId` — product is resolved via `product_colors.productId`, no redundant FK on `order_items`.
 
 - **FCFS stock control via DB-level locking.**  
   `PATCH /order/:id/complete` uses `SELECT FOR UPDATE` (via `createQueryBuilder` to avoid the Postgres outer-join restriction), locks the `product_colors` row, checks stock ≥ 1, then decrements. Concurrent requests queue at the DB.
@@ -85,6 +88,7 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
+| productCode | integer | auto-increment, formatted as `P0001-001` in API responses |
 | name | varchar(255) | indexed |
 | description | text | nullable |
 | imageUrl | varchar(255) | nullable |
@@ -117,7 +121,6 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 |---|---|---|
 | id | uuid PK | |
 | orderId | uuid FK → orders | CASCADE delete, indexed |
-| productId | uuid FK → products | indexed |
 | productColorId | uuid FK → product_colors | RESTRICT delete, indexed, nullable |
 
 ---
@@ -127,15 +130,14 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 ```
 categories ←── brand_categories ──→ brands
                                        │
-                                    products
+                                    products (serialId → productCode e.g. P0001-001)
                                        │
                           product_colors (price, stock)
                                ↑              ↑
                            colorId        productId
                            (colors)
 
-orders ──── order_items ──→ products
-                  └──→ product_colors
+orders ──── order_items ──→ product_colors (product variants)
 ```
 
 ---
@@ -172,6 +174,7 @@ All responses wrapped:
 {
   "productColorId": "uuid",
   "productId": "uuid",
+  "productCode": "P0001-001",
   "name": "iPhone 15 Pro (Black)",
   "price": 999.99,
   "imageUrl": "https://...",

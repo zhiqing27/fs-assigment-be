@@ -70,6 +70,7 @@ export class ProductsService {
     return {
       productColorId: pc.id,
       productId: pc.productId,
+      productCode: pc.product.productCode,
       name: `${pc.product.name} (${pc.color.name})`,
       price: Number(pc.price),
       imageUrl: pc.product.imageUrl,

@@ -33,7 +33,6 @@ export class OrderService {
         totalItems: 1,
         items: [
           entityManager.create(OrderItem, {
-            productId: pc.productId,
             productColorId: pc.id,
           }),
         ],
@@ -49,8 +48,8 @@ export class OrderService {
     const [orders, total] = await this.orderRepository
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.items', 'item')
-      .leftJoinAndSelect('item.product', 'product')
       .leftJoinAndSelect('item.productColor', 'pc')
+      .leftJoinAndSelect('pc.product', 'product')
       .leftJoinAndSelect('pc.color', 'color')
       .where('order.clientId = :clientId', { clientId })
       .orderBy('order.createdAt', 'ASC')
@@ -60,11 +59,13 @@ export class OrderService {
 
     const data = orders.map((order) => {
       const item = order.items[0];
+      const pc = item?.productColor;
       return {
         id: order.id,
         orderId: order.orderNumber,
-        productId: item?.productId ?? '',
-        productName: item?.product?.name ?? '',
+        productId: pc?.productId ?? '',
+        productCode: pc?.product?.productCode ?? '',
+        productName: item?.productColor?.product?.name ?? '',
         productColor: item?.productColor?.color?.name ?? '',
         currentStock: item?.productColor?.stock ?? 0,
         status: order.status,
@@ -82,7 +83,8 @@ export class OrderService {
         .where('order.id = :id', { id })
         .andWhere('order.status = :status', { status: OrderStatus.PENDING })
         .setLock('pessimistic_write')
-        .getOneOrFail();
+        .getOneOrFail()
+        .catch(() => { throw new BadRequestException(`Order not found or not pending`); });
 
       const item = await entityManager.findOneOrFail(OrderItem, {
         where: { orderId: order.id },

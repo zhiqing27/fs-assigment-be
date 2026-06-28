@@ -1,7 +1,8 @@
 export class ProductListingItemDto {
   productColorId: string;
   productId: string;
-  name: string; 
+  productCode: string;
+  name: string;
   price: number;
   imageUrl: string;
   stock: number;
