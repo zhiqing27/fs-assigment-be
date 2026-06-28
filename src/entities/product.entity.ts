@@ -10,6 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { Brand } from './brand.entity';
+import { Category } from './category.entity';
 import { ProductColor } from './product-color.entity';
 import { OrderItem } from './order-item.entity';
 
@@ -50,6 +51,17 @@ export class Product {
   @Index()
   @Column('uuid')
   brandId!: string;
+
+  @ManyToOne(() => Category, (category) => category.products, {
+    onDelete: 'RESTRICT',
+    eager: true,
+  })
+  @JoinColumn({ name: 'categoryId' })
+  category!: Category;
+
+  @Index()
+  @Column('uuid')
+  categoryId!: string;
 
   @OneToMany(() => ProductColor, (color) => color.product, {
     cascade: true,

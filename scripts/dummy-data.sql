@@ -28,121 +28,126 @@ INSERT INTO brands (id, name, description, "logoUrl", "createdAt", "updatedAt") 
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
--- 2b. BRAND_CATEGORIES junction
+-- 2b. BRAND_CATEGORIES — admin-assigned brand↔category mappings
 -- =====================================================
-INSERT INTO brand_categories ("brandId", "categoryId") VALUES
--- Apple: Smartphones + Tablets + Laptops
-('a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
-('a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480'),
-('a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d481'),
--- Samsung: Smartphones + Tablets
-('a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
-('a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d480'),
--- Google: Smartphones
-('a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
--- Xiaomi: Smartphones
-('a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
--- OnePlus: Smartphones
-('a47ac10b-58cc-4372-a567-0e02b2c3d483', 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
--- Dell: Laptops
-('a47ac10b-58cc-4372-a567-0e02b2c3d487', 'f47ac10b-58cc-4372-a567-0e02b2c3d481'),
--- HP: Laptops
-('a47ac10b-58cc-4372-a567-0e02b2c3d488', 'f47ac10b-58cc-4372-a567-0e02b2c3d481')
+INSERT INTO brand_categories (id, "brandId", "categoryId", "createdAt") VALUES
+('bc000001-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW()),  -- Apple → Smartphones
+('bc000002-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW()),  -- Apple → Tablets
+('bc000003-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW()),  -- Apple → Laptops
+('bc000004-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW()),  -- Samsung → Smartphones
+('bc000005-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW()),  -- Samsung → Tablets
+('bc000006-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW()),  -- Google → Smartphones
+('bc000007-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW()),  -- Xiaomi → Smartphones
+('bc000008-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d483', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW()),  -- OnePlus → Smartphones
+('bc000009-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d487', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW()),  -- Dell → Laptops
+('bc000010-0000-0000-0000-000000000000', 'a47ac10b-58cc-4372-a567-0e02b2c3d488', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW())   -- HP → Laptops
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
 -- 3. PRODUCTS (15) — totalStock = sum of color stocks
 -- =====================================================
-INSERT INTO products (id, name, description, "imageUrl", "basePrice", "totalStock", "brandId", "createdAt", "updatedAt") VALUES
-('b47ac10b-58cc-4372-a567-0e02b2c3d479', 'iPhone 15 Pro',   'Latest iPhone with A17 Pro chip',        'https://placehold.co/300x400?text=iPhone+15+Pro',   999.99,  90,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d480', 'iPhone 15',       'Affordable flagship iPhone',             'https://placehold.co/300x400?text=iPhone+15',       799.99,  130, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d481', 'iPhone 14',       'Previous generation iPhone',             'https://placehold.co/300x400?text=iPhone+14',       699.99,  180, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d482', 'Galaxy S24 Ultra','Premium flagship Android phone',         'https://placehold.co/300x400?text=Galaxy+S24+Ultra',1299.99, 70,  'a47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d483', 'Galaxy S24',      'Flagship Samsung phone',                 'https://placehold.co/300x400?text=Galaxy+S24',      999.99,  120, 'a47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d484', 'Pixel 8 Pro',     'Premium Google phone with AI features',  'https://placehold.co/300x400?text=Pixel+8+Pro',     899.99,  53,  'a47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d485', 'Pixel 8',         'Affordable Google Pixel phone',          'https://placehold.co/300x400?text=Pixel+8',         699.99,  110, 'a47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d486', 'Xiaomi 14 Ultra', 'High-end Xiaomi with excellent camera',  'https://placehold.co/300x400?text=Xiaomi+14+Ultra', 649.99,  90,  'a47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d487', 'Xiaomi 14',       'Mid-range Xiaomi smartphone',            'https://placehold.co/300x400?text=Xiaomi+14',       449.99,  160, 'a47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d488', 'OnePlus 12',      'Fast and reliable OnePlus phone',        'https://placehold.co/300x400?text=OnePlus+12',      799.99,  130, 'a47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d489', 'iPad Pro 12.9"',  'Premium Apple tablet with M2 chip',      'https://placehold.co/300x400?text=iPad+Pro',        1099.99, 70,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d490', 'iPad Air',        'Mid-range Apple tablet',                 'https://placehold.co/300x400?text=iPad+Air',        599.99,  100, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d491', 'Galaxy Tab S9',   'Premium Samsung tablet',                 'https://placehold.co/300x400?text=Galaxy+Tab+S9',   799.99,  37,  'a47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d492', 'MacBook Pro 16"', 'Premium Apple laptop',                   'https://placehold.co/300x400?text=MacBook+Pro+16',  2499.99, 37,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('b47ac10b-58cc-4372-a567-0e02b2c3d493', 'Dell XPS 15',     'High-performance Dell laptop',           'https://placehold.co/300x400?text=Dell+XPS+15',     1699.99, 60,  'a47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW())
+-- categoryId: Smartphones=f47ac10b-...-479 Tablets=f47ac10b-...-480 Laptops=f47ac10b-...-481
+INSERT INTO products (id, name, description, "imageUrl", "basePrice", "totalStock", "brandId", "categoryId", "createdAt", "updatedAt") VALUES
+('b47ac10b-58cc-4372-a567-0e02b2c3d479', 'iPhone 15 Pro',   'Latest iPhone with A17 Pro chip',        'https://placehold.co/300x400?text=iPhone+15+Pro',   999.99,  90,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d480', 'iPhone 15',       'Affordable flagship iPhone',             'https://placehold.co/300x400?text=iPhone+15',       799.99,  130, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d481', 'iPhone 14',       'Previous generation iPhone',             'https://placehold.co/300x400?text=iPhone+14',       699.99,  180, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d482', 'Galaxy S24 Ultra','Premium flagship Android phone',         'https://placehold.co/300x400?text=Galaxy+S24+Ultra',1299.99, 70,  'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d483', 'Galaxy S24',      'Flagship Samsung phone',                 'https://placehold.co/300x400?text=Galaxy+S24',      999.99,  120, 'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d484', 'Pixel 8 Pro',     'Premium Google phone with AI features',  'https://placehold.co/300x400?text=Pixel+8+Pro',     899.99,  53,  'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d485', 'Pixel 8',         'Affordable Google Pixel phone',          'https://placehold.co/300x400?text=Pixel+8',         699.99,  110, 'a47ac10b-58cc-4372-a567-0e02b2c3d481', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d486', 'Xiaomi 14 Ultra', 'High-end Xiaomi with excellent camera',  'https://placehold.co/300x400?text=Xiaomi+14+Ultra', 649.99,  90,  'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d487', 'Xiaomi 14',       'Mid-range Xiaomi smartphone',            'https://placehold.co/300x400?text=Xiaomi+14',       449.99,  160, 'a47ac10b-58cc-4372-a567-0e02b2c3d482', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d488', 'OnePlus 12',      'Fast and reliable OnePlus phone',        'https://placehold.co/300x400?text=OnePlus+12',      799.99,  130, 'a47ac10b-58cc-4372-a567-0e02b2c3d483', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d489', 'iPad Pro 12.9"',  'Premium Apple tablet with M2 chip',      'https://placehold.co/300x400?text=iPad+Pro',        1099.99, 70,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d490', 'iPad Air',        'Mid-range Apple tablet',                 'https://placehold.co/300x400?text=iPad+Air',        599.99,  100, 'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d491', 'Galaxy Tab S9',   'Premium Samsung tablet',                 'https://placehold.co/300x400?text=Galaxy+Tab+S9',   799.99,  37,  'a47ac10b-58cc-4372-a567-0e02b2c3d480', 'f47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d492', 'MacBook Pro 16"', 'Premium Apple laptop',                   'https://placehold.co/300x400?text=MacBook+Pro+16',  2499.99, 37,  'a47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+('b47ac10b-58cc-4372-a567-0e02b2c3d493', 'Dell XPS 15',     'High-performance Dell laptop',           'https://placehold.co/300x400?text=Dell+XPS+15',     1699.99, 60,  'a47ac10b-58cc-4372-a567-0e02b2c3d487', 'f47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
--- 4. PRODUCT COLORS — every product has colors
+-- 4. COLORS (5)
+-- =====================================================
+INSERT INTO colors (id, name, "colorCode", "createdAt", "updatedAt") VALUES
+('00000000-0000-0000-0000-000000000001', 'Black',  '#000000', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000002', 'White',  '#FFFFFF', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000003', 'Blue',   '#4A90E2', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000004', 'Silver', '#C0C0C0', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000005', 'Gold',   '#FFD700', NOW(), NOW())
+ON CONFLICT DO NOTHING;
+
+-- =====================================================
+-- 5. PRODUCT COLORS — variant rows (colorId FK, stock, price)
 --    totalStock per product = sum of color stocks
 -- =====================================================
-INSERT INTO product_colors (id, name, "colorCode", stock, price, "productId", "createdAt", "updatedAt") VALUES
--- iPhone 15 Pro (total=90)
-('c47ac10b-58cc-4372-a567-0e02b2c3d479', 'Titanium Black',   '#1C1C1C', 30, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d480', 'Titanium Silver',  '#C0C0C0', 25, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d481', 'Titanium Gold',    '#FFD700', 20, 1049.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d482', 'Titanium Natural', '#D4AF37', 15, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
--- iPhone 15 (total=130)
-('c47ac10b-58cc-4372-a567-0e02b2c3d483', 'Black',  '#000000', 40, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d484', 'Blue',   '#4A90E2', 35, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d485', 'Pink',   '#FF69B4', 30, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d486', 'Yellow', '#FFD60A', 25, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
--- iPhone 14 (total=180)
-('c47ac10b-58cc-4372-a567-0e02b2c3d507', 'Midnight',  '#191970', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d508', 'Purple',    '#7B2FBE', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d509', 'Blue',      '#4A90E2', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d510', 'Starlight', '#E8E4D9', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
--- Galaxy S24 Ultra (total=70)
-('c47ac10b-58cc-4372-a567-0e02b2c3d487', 'Phantom Black',  '#1C1C1C', 25, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d488', 'Phantom Silver', '#E5E5E5', 20, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d489', 'Amber Gold',     '#D4A574', 15, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d490', 'Violet',         '#800080', 10, 1349.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
--- Galaxy S24 (total=120)
-('c47ac10b-58cc-4372-a567-0e02b2c3d511', 'Onyx Black',    '#0D0D0D', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d512', 'Marble Gray',   '#808080', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d513', 'Cobalt Violet', '#8A2BE2', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d514', 'Lime',          '#A8D400', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
--- Pixel 8 Pro (total=53)
-('c47ac10b-58cc-4372-a567-0e02b2c3d491', 'Obsidian',  '#1C1C1C', 20, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d492', 'Porcelain', '#E8E8E8', 18, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d493', 'Bay',       '#4A90E2', 15, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
--- Pixel 8 (total=110)
-('c47ac10b-58cc-4372-a567-0e02b2c3d515', 'Obsidian', '#1C1C1C', 40, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d516', 'Hazel',    '#7B6E47', 35, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d517', 'Rose',     '#B76E79', 35, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
--- Xiaomi 14 Ultra (total=90)
-('c47ac10b-58cc-4372-a567-0e02b2c3d494', 'Pearl White',    '#FDEEF4', 35, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d495', 'Midnight Black', '#191970', 30, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d496', 'Ocean Blue',     '#006994', 25, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
--- Xiaomi 14 (total=160)
-('c47ac10b-58cc-4372-a567-0e02b2c3d518', 'Black',  '#000000', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d519', 'White',  '#FFFFFF', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d520', 'Green',  '#228B22', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d521', 'Silver', '#C0C0C0', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
--- OnePlus 12 (total=130)
-('c47ac10b-58cc-4372-a567-0e02b2c3d522', 'Silky Black',     '#1C1C1C', 45, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d523', 'Flowy Emerald',   '#50C878', 45, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d524', 'Glacial White',   '#F0F8FF', 40, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
--- iPad Pro (total=70)
-('c47ac10b-58cc-4372-a567-0e02b2c3d497', 'Space Gray', '#505050', 25, 1099.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d498', 'Silver',     '#C0C0C0', 20, 1099.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d499', 'Gold',       '#FFD700', 15, 1149.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d500', 'Rose Gold',  '#B76E79', 10, 1149.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
--- iPad Air (total=100)
-('c47ac10b-58cc-4372-a567-0e02b2c3d525', 'Blue',       '#4A90E2', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d526', 'Purple',     '#9B59B6', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d527', 'Starlight',  '#E8E4D9', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d528', 'Space Gray', '#505050', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
--- Galaxy Tab S9 (total=37)
-('c47ac10b-58cc-4372-a567-0e02b2c3d501', 'Graphite', '#383838', 15, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d502', 'Silver',   '#C0C0C0', 12, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d503', 'Cream',    '#FFF8DC', 10, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
--- MacBook Pro (total=37)
-('c47ac10b-58cc-4372-a567-0e02b2c3d504', 'Space Black', '#1C1C1C', 15, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d505', 'Silver',      '#C0C0C0', 12, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d506', 'Midnight',    '#191970', 10, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
--- Dell XPS 15 (total=60)
-('c47ac10b-58cc-4372-a567-0e02b2c3d529', 'Platinum Silver', '#A0A0A0', 30, 1699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d493', NOW(), NOW()),
-('c47ac10b-58cc-4372-a567-0e02b2c3d530', 'Frost',          '#F0F0F0', 30, 1699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d493', NOW(), NOW())
+INSERT INTO product_colors (id, "colorId", stock, price, "productId", "createdAt", "updatedAt") VALUES
+-- iPhone 15 Pro (total=90): Black, White, Gold, Silver
+('c47ac10b-58cc-4372-a567-0e02b2c3d479', '00000000-0000-0000-0000-000000000001', 30, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d480', '00000000-0000-0000-0000-000000000002', 25, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d481', '00000000-0000-0000-0000-000000000005', 20, 1049.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d482', '00000000-0000-0000-0000-000000000004', 15, 999.99,  'b47ac10b-58cc-4372-a567-0e02b2c3d479', NOW(), NOW()),
+-- iPhone 15 (total=130): Black, Blue, White, Gold
+('c47ac10b-58cc-4372-a567-0e02b2c3d483', '00000000-0000-0000-0000-000000000001', 40, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d484', '00000000-0000-0000-0000-000000000003', 35, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d485', '00000000-0000-0000-0000-000000000002', 30, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d486', '00000000-0000-0000-0000-000000000005', 25, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d480', NOW(), NOW()),
+-- iPhone 14 (total=180): Black, Blue, Silver, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d507', '00000000-0000-0000-0000-000000000001', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d508', '00000000-0000-0000-0000-000000000003', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d509', '00000000-0000-0000-0000-000000000004', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d510', '00000000-0000-0000-0000-000000000002', 45, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d481', NOW(), NOW()),
+-- Galaxy S24 Ultra (total=70): Black, Silver, Gold, Blue
+('c47ac10b-58cc-4372-a567-0e02b2c3d487', '00000000-0000-0000-0000-000000000001', 25, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d488', '00000000-0000-0000-0000-000000000004', 20, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d489', '00000000-0000-0000-0000-000000000005', 15, 1299.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d490', '00000000-0000-0000-0000-000000000003', 10, 1349.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d482', NOW(), NOW()),
+-- Galaxy S24 (total=120): Black, Silver, Blue, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d511', '00000000-0000-0000-0000-000000000001', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d512', '00000000-0000-0000-0000-000000000004', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d513', '00000000-0000-0000-0000-000000000003', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d514', '00000000-0000-0000-0000-000000000002', 30, 999.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d483', NOW(), NOW()),
+-- Pixel 8 Pro (total=53): Black, White, Blue
+('c47ac10b-58cc-4372-a567-0e02b2c3d491', '00000000-0000-0000-0000-000000000001', 20, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d492', '00000000-0000-0000-0000-000000000002', 18, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d493', '00000000-0000-0000-0000-000000000003', 15, 899.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d484', NOW(), NOW()),
+-- Pixel 8 (total=110): Black, Silver, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d515', '00000000-0000-0000-0000-000000000001', 40, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d516', '00000000-0000-0000-0000-000000000004', 35, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d517', '00000000-0000-0000-0000-000000000002', 35, 699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d485', NOW(), NOW()),
+-- Xiaomi 14 Ultra (total=90): White, Black, Blue
+('c47ac10b-58cc-4372-a567-0e02b2c3d494', '00000000-0000-0000-0000-000000000002', 35, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d495', '00000000-0000-0000-0000-000000000001', 30, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d496', '00000000-0000-0000-0000-000000000003', 25, 649.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d486', NOW(), NOW()),
+-- Xiaomi 14 (total=160): Black, White, Blue, Silver
+('c47ac10b-58cc-4372-a567-0e02b2c3d518', '00000000-0000-0000-0000-000000000001', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d519', '00000000-0000-0000-0000-000000000002', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d520', '00000000-0000-0000-0000-000000000003', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d521', '00000000-0000-0000-0000-000000000004', 40, 449.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d487', NOW(), NOW()),
+-- OnePlus 12 (total=130): Black, Blue, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d522', '00000000-0000-0000-0000-000000000001', 45, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d523', '00000000-0000-0000-0000-000000000003', 45, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d524', '00000000-0000-0000-0000-000000000002', 40, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d488', NOW(), NOW()),
+-- iPad Pro (total=70): Silver, Black, Gold, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d497', '00000000-0000-0000-0000-000000000004', 25, 1099.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d498', '00000000-0000-0000-0000-000000000001', 20, 1099.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d499', '00000000-0000-0000-0000-000000000005', 15, 1149.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d500', '00000000-0000-0000-0000-000000000002', 10, 1149.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d489', NOW(), NOW()),
+-- iPad Air (total=100): Blue, White, Silver, Gold
+('c47ac10b-58cc-4372-a567-0e02b2c3d525', '00000000-0000-0000-0000-000000000003', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d526', '00000000-0000-0000-0000-000000000002', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d527', '00000000-0000-0000-0000-000000000004', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d528', '00000000-0000-0000-0000-000000000005', 25, 599.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d490', NOW(), NOW()),
+-- Galaxy Tab S9 (total=37): Black, Silver, White
+('c47ac10b-58cc-4372-a567-0e02b2c3d501', '00000000-0000-0000-0000-000000000001', 15, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d502', '00000000-0000-0000-0000-000000000004', 12, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d503', '00000000-0000-0000-0000-000000000002', 10, 799.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d491', NOW(), NOW()),
+-- MacBook Pro (total=37): Black, Silver, Gold
+('c47ac10b-58cc-4372-a567-0e02b2c3d504', '00000000-0000-0000-0000-000000000001', 15, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d505', '00000000-0000-0000-0000-000000000004', 12, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d506', '00000000-0000-0000-0000-000000000005', 10, 2499.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d492', NOW(), NOW()),
+-- Dell XPS 15 (total=60): Silver, Black
+('c47ac10b-58cc-4372-a567-0e02b2c3d529', '00000000-0000-0000-0000-000000000004', 30, 1699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d493', NOW(), NOW()),
+('c47ac10b-58cc-4372-a567-0e02b2c3d530', '00000000-0000-0000-0000-000000000001', 30, 1699.99, 'b47ac10b-58cc-4372-a567-0e02b2c3d493', NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
@@ -150,17 +155,17 @@ ON CONFLICT DO NOTHING;
 -- clientId A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' (5 orders)
 -- clientId B = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' (5 orders)
 -- =====================================================
-INSERT INTO orders (id, "orderNumber", "clientId", status, "totalAmount", "totalItems", "createdAt", "updatedAt", "deliveredAt") VALUES
-('d47ac10b-58cc-4372-a567-0e02b2c3d479', 'MY000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'delivered', 999.99,  1, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days', NOW() - INTERVAL '25 days'),
-('d47ac10b-58cc-4372-a567-0e02b2c3d480', 'MY000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'delivered', 799.99,  1, NOW() - INTERVAL '20 days', NOW() - INTERVAL '20 days', NOW() - INTERVAL '15 days'),
-('d47ac10b-58cc-4372-a567-0e02b2c3d481', 'MY000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   1299.99, 1, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', NULL),
-('d47ac10b-58cc-4372-a567-0e02b2c3d482', 'MY000004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   649.99,  1, NOW() - INTERVAL '5 days',  NOW() - INTERVAL '5 days',  NULL),
-('d47ac10b-58cc-4372-a567-0e02b2c3d483', 'MY000005', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   2499.99, 1, NOW() - INTERVAL '2 days',  NOW() - INTERVAL '2 days',  NULL),
-('d47ac10b-58cc-4372-a567-0e02b2c3d484', 'MY000006', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'delivered', 899.99,  1, NOW() - INTERVAL '25 days', NOW() - INTERVAL '25 days', NOW() - INTERVAL '20 days'),
-('d47ac10b-58cc-4372-a567-0e02b2c3d485', 'MY000007', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'delivered', 1699.99, 1, NOW() - INTERVAL '18 days', NOW() - INTERVAL '18 days', NOW() - INTERVAL '12 days'),
-('d47ac10b-58cc-4372-a567-0e02b2c3d486', 'MY000008', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'delivered', 799.99,  1, NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', NOW() - INTERVAL '7 days'),
-('d47ac10b-58cc-4372-a567-0e02b2c3d487', 'MY000009', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'pending',   449.99,  1, NOW() - INTERVAL '4 days',  NOW() - INTERVAL '4 days',  NULL),
-('d47ac10b-58cc-4372-a567-0e02b2c3d488', 'MY000010', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'pending',   999.99,  1, NOW() - INTERVAL '1 day',   NOW() - INTERVAL '1 day',   NULL)
+INSERT INTO orders (id, "orderNumber", "clientId", status, "totalAmount", "totalItems", "createdAt", "updatedAt") VALUES
+('d47ac10b-58cc-4372-a567-0e02b2c3d479', 'MY000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'completed', 999.99,  1, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d480', 'MY000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'completed', 799.99,  1, NOW() - INTERVAL '20 days', NOW() - INTERVAL '20 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d481', 'MY000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   1299.99, 1, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d482', 'MY000004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   649.99,  1, NOW() - INTERVAL '5 days',  NOW() - INTERVAL '5 days' ),
+('d47ac10b-58cc-4372-a567-0e02b2c3d483', 'MY000005', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'pending',   2499.99, 1, NOW() - INTERVAL '2 days',  NOW() - INTERVAL '2 days' ),
+('d47ac10b-58cc-4372-a567-0e02b2c3d484', 'MY000006', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'completed', 899.99,  1, NOW() - INTERVAL '25 days', NOW() - INTERVAL '25 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d485', 'MY000007', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'completed', 1699.99, 1, NOW() - INTERVAL '18 days', NOW() - INTERVAL '18 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d486', 'MY000008', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'completed', 799.99,  1, NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days'),
+('d47ac10b-58cc-4372-a567-0e02b2c3d487', 'MY000009', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'pending',   449.99,  1, NOW() - INTERVAL '4 days',  NOW() - INTERVAL '4 days' ),
+('d47ac10b-58cc-4372-a567-0e02b2c3d488', 'MY000010', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'pending',   999.99,  1, NOW() - INTERVAL '1 day',   NOW() - INTERVAL '1 day'  )
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
@@ -183,12 +188,13 @@ ON CONFLICT DO NOTHING;
 -- VERIFICATION — row counts
 -- =====================================================
 SELECT
-  (SELECT COUNT(*) FROM categories)     AS categories,   -- expect 5
-  (SELECT COUNT(*) FROM brands)         AS brands,       -- expect 10
-  (SELECT COUNT(*) FROM products)       AS products,     -- expect 15
-  (SELECT COUNT(*) FROM product_colors) AS colors,       -- expect 54
-  (SELECT COUNT(*) FROM orders)         AS orders,       -- expect 10
-  (SELECT COUNT(*) FROM order_items)    AS order_items;  -- expect 10
+  (SELECT COUNT(*) FROM categories)     AS categories,    -- expect 5
+  (SELECT COUNT(*) FROM brands)         AS brands,        -- expect 7
+  (SELECT COUNT(*) FROM colors)         AS colors,        -- expect 5
+  (SELECT COUNT(*) FROM products)       AS products,      -- expect 15
+  (SELECT COUNT(*) FROM product_colors) AS product_colors,-- expect 52
+  (SELECT COUNT(*) FROM orders)         AS orders,        -- expect 10
+  (SELECT COUNT(*) FROM order_items)    AS order_items;   -- expect 10
 
 -- =====================================================
 -- QUICK REFERENCE — IDs for API testing

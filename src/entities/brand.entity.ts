@@ -2,13 +2,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
   OneToMany,
-  JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Category } from './category.entity';
 import { Product } from './product.entity';
 
 @Entity('brands')
@@ -30,14 +27,6 @@ export class Brand {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-
-  @ManyToMany(() => Category, (category) => category.brands, { eager: true })
-  @JoinTable({
-    name: 'brand_categories',
-    joinColumn: { name: 'brandId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'categoryId', referencedColumnName: 'id' },
-  })
-  categories!: Category[];
 
   @OneToMany(() => Product, (product) => product.brand, { cascade: true })
   products!: Product[];

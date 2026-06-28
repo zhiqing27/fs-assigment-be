@@ -1,5 +1,5 @@
-import { IsOptional, IsString, IsInt, Min, Max, IsArray, IsUUID } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { IsOptional, IsString, IsInt, IsUUID, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class FindProductsQueryDto {
   @IsOptional()
@@ -7,17 +7,15 @@ export class FindProductsQueryDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
+  @IsUUID('4')
   categoryId?: string;
 
   @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
-  @IsArray()
-  @IsUUID('4', { each: true })
-  brandId?: string[];
+  @IsUUID('4')
+  brandId?: string;
 
   @IsOptional()
-  @IsString()
+  @IsUUID('4')
   color?: string;
 
   @IsOptional()
@@ -25,7 +23,7 @@ export class FindProductsQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit: number = 20;
+  limit: number = 10;
 
   @IsOptional()
   @Type(() => Number)

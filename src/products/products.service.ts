@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { ProductColor } from '../entities/product-color.entity';
+import { Color } from '../entities/color.entity';
 import { Category } from '../entities/category.entity';
 import { Brand } from '../entities/brand.entity';
 import { FindProductsQueryDto } from './dtos/requests/find-products-query.dto';
@@ -15,13 +16,13 @@ export class ProductsService {
   private productRepository: Repository<Product>;
   private brandRepository: Repository<Brand>;
   private categoryRepository: Repository<Category>;
-  private productColorRepository: Repository<ProductColor>;
+  private colorRepository: Repository<Color>;
 
   constructor(private dataSource: DataSource) {
     this.productRepository = this.dataSource.getRepository(Product);
     this.brandRepository = this.dataSource.getRepository(Brand);
     this.categoryRepository = this.dataSource.getRepository(Category);
-    this.productColorRepository = this.dataSource.getRepository(ProductColor);
+    this.colorRepository = this.dataSource.getRepository(Color);
   }
 
   async findAll(query: FindProductsQueryDto): Promise<FindProductsResponseDto> {
@@ -30,28 +31,26 @@ export class ProductsService {
     const qb = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('brand.categories', 'category')
-      .leftJoinAndSelect('product.colors', 'color');
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.colors', 'productColor')
+      .leftJoinAndSelect('productColor.color', 'color');
 
     if (name) {
       qb.andWhere('product.name ILIKE :name', { name: `%${name}%` });
     }
 
     if (categoryId) {
-      qb.andWhere(
-        'EXISTS (SELECT 1 FROM brand_categories bc WHERE bc."brandId" = brand.id AND bc."categoryId" = :categoryId)',
-        { categoryId },
-      );
+      qb.andWhere('product.categoryId = :categoryId', { categoryId });
     }
 
-    if (brandId?.length) {
-      qb.andWhere('brand.id IN (:...brandId)', { brandId });
+    if (brandId) {
+      qb.andWhere('product.brandId = :brandId', { brandId });
     }
 
     if (color) {
       qb.andWhere(
-        'EXISTS (SELECT 1 FROM product_colors pc WHERE pc."productId" = product.id AND pc.name ILIKE :color)',
-        { color: `%${color}%` },
+        'EXISTS (SELECT 1 FROM product_colors pc WHERE pc."productId" = product.id AND pc."colorId" = :color)',
+        { color },
       );
     }
 
@@ -78,11 +77,12 @@ export class ProductsService {
       basePrice: Number(product.basePrice),
       brandId: product.brand.id,
       brandName: product.brand.name,
-      categories: product.brand.categories.map((c) => ({ id: c.id, name: c.name })),
+      categoryId: product.category.id,
+      categoryName: product.category.name,
       colors: product.colors.map((pc) => ({
         id: pc.id,
-        name: pc.name,
-        colorCode: pc.colorCode,
+        name: pc.color.name,
+        colorCode: pc.color.colorCode,
         stock: pc.stock,
         price: Number(pc.price),
       })),
@@ -97,16 +97,16 @@ export class ProductsService {
   }
 
   async getBrands(
-    categoryId?: string[],
+    categoryId?: string,
   ): Promise<{ id: string; name: string; logoUrl: string | null }[]> {
     const qb = this.brandRepository
       .createQueryBuilder('brand')
       .select(['brand.id', 'brand.name', 'brand.logoUrl'])
       .orderBy('brand.name', 'ASC');
 
-    if (categoryId?.length) {
+    if (categoryId) {
       qb.andWhere(
-        'EXISTS (SELECT 1 FROM brand_categories bc WHERE bc."brandId" = brand.id AND bc."categoryId" IN (:...categoryId))',
+        'EXISTS (SELECT 1 FROM brand_categories bc WHERE bc."brandId" = brand.id AND bc."categoryId" = :categoryId)',
         { categoryId },
       );
     }
@@ -114,15 +114,10 @@ export class ProductsService {
     return qb.getMany();
   }
 
-  async getColorsUnique(): Promise<{ name: string; colorCode: string }[]> {
-    return this.productColorRepository
-      .createQueryBuilder('product_colors')
-      .distinctOn(['product_colors.name'])
-      .select([
-        'product_colors.name AS name',
-        'product_colors.colorCode AS colorCode',
-      ])
-      .orderBy('product_colors.name')
-      .getRawMany();
+  async getColors(): Promise<{ name: string; colorCode: string }[]> {
+    return this.colorRepository.find({
+      select: ['name', 'colorCode'],
+      order: { name: 'ASC' },
+    });
   }
 }

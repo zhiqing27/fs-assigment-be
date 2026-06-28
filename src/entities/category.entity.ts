@@ -2,11 +2,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Brand } from './brand.entity';
+import { Product } from './product.entity';
 
 @Entity('categories')
 export class Category {
@@ -25,6 +25,6 @@ export class Category {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @ManyToMany(() => Brand, (brand) => brand.categories)
-  brands!: Brand[];
+  @OneToMany(() => Product, (product) => product.category)
+  products!: Product[];
 }

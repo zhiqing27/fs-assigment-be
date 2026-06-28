@@ -18,16 +18,13 @@ export class ProductsController {
 
   @Get('filters/brands')
   async getBrands(
-    @Query('categoryId') categoryId?: string | string[],
+    @Query('categoryId') categoryId?: string,
   ): Promise<{ id: string; name: string; logoUrl: string | null }[]> {
-    const ids = categoryId
-      ? Array.isArray(categoryId) ? categoryId : [categoryId]
-      : undefined;
-    return this.productsService.getBrands(ids);
+    return this.productsService.getBrands(categoryId);
   }
 
   @Get('filters/colors')
   async getColors(): Promise<{ name: string; colorCode: string }[]> {
-    return this.productsService.getColorsUnique();
+    return this.productsService.getColors();
   }
 }

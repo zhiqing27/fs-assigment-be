@@ -9,18 +9,12 @@ import {
   Index,
 } from 'typeorm';
 import { Product } from './product.entity';
+import { Color } from './color.entity';
 
 @Entity('product_colors')
 export class ProductColor {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
-  @Index()
-  @Column({ type: 'varchar', length: 100 })
-  name!: string;
-
-  @Column({ type: 'varchar', length: 7 })
-  colorCode!: string;
 
   @Column({ type: 'integer', default: 0 })
   stock!: number;
@@ -44,4 +38,15 @@ export class ProductColor {
   @Index()
   @Column('uuid')
   productId!: string;
+
+  @ManyToOne(() => Color, (color) => color.productColors, {
+    eager: true,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'colorId' })
+  color!: Color;
+
+  @Index()
+  @Column('uuid')
+  colorId!: string;
 }
