@@ -77,7 +77,6 @@ export class OrderService {
 
   async complete(id: string): Promise<boolean> {
     return await this.dataSource.transaction(async (entityManager) => {
-      // lock only the orders row with no joins — eager relations cause LEFT JOINs which break FOR UPDATE
       const order = await entityManager
         .createQueryBuilder(Order, 'order')
         .where('order.id = :id', { id })
