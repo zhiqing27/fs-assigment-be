@@ -2,11 +2,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
 
 @Entity('categories')
 export class Category {
@@ -24,7 +22,4 @@ export class Category {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-
-  @OneToMany(() => Product, (product) => product.category)
-  products!: Product[];
 }

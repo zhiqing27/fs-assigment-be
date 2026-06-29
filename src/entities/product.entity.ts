@@ -9,17 +9,13 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { Brand } from './brand.entity';
-import { Category } from './category.entity';
+import { BrandCategory } from './brand-category.entity';
 import { ProductColor } from './product-color.entity';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
-  @Column({ type: 'varchar', length: 20, unique: true })
-  productCode!: string;
 
   @Index()
   @Column({ type: 'varchar', length: 255 })
@@ -37,27 +33,13 @@ export class Product {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @ManyToOne(() => Brand, (brand) => brand.products, {
-    onDelete: 'CASCADE',
-    eager: true,
-  })
-  @JoinColumn({ name: 'brandId' })
-  brand!: Brand;
+  @ManyToOne(() => BrandCategory, { onDelete: 'RESTRICT', eager: false })
+  @JoinColumn({ name: 'brandCategoryId' })
+  brandCategory!: BrandCategory;
 
   @Index()
   @Column('uuid')
-  brandId!: string;
-
-  @ManyToOne(() => Category, (category) => category.products, {
-    onDelete: 'RESTRICT',
-    eager: true,
-  })
-  @JoinColumn({ name: 'categoryId' })
-  category!: Category;
-
-  @Index()
-  @Column('uuid')
-  categoryId!: string;
+  brandCategoryId!: string;
 
   @OneToMany(() => ProductColor, (color) => color.product, {
     cascade: true,

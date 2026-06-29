@@ -31,19 +31,20 @@ export class ProductsService {
       .createQueryBuilder('pc')
       .innerJoinAndSelect('pc.product', 'product')
       .innerJoinAndSelect('pc.color', 'color')
-      .innerJoinAndSelect('product.brand', 'brand')
-      .innerJoinAndSelect('product.category', 'category');
+      .innerJoinAndSelect('product.brandCategory', 'bc')
+      .innerJoinAndSelect('bc.brand', 'brand')
+      .innerJoinAndSelect('bc.category', 'category');
 
     if (name) {
       qb.andWhere('product.name ILIKE :name', { name: `%${name}%` });
     }
 
     if (categoryId) {
-      qb.andWhere('product.categoryId = :categoryId', { categoryId });
+      qb.andWhere('category.id = :categoryId', { categoryId });
     }
 
     if (brandId) {
-      qb.andWhere('product.brandId = :brandId', { brandId });
+      qb.andWhere('brand.id = :brandId', { brandId });
     }
 
     if (color) {
@@ -67,18 +68,19 @@ export class ProductsService {
   }
 
   private mapToDto(pc: ProductColor): ProductListingItemDto {
+    const { brand, category } = pc.product.brandCategory;
     return {
       productColorId: pc.id,
       productId: pc.productId,
-      productCode: pc.product.productCode,
+      productCode: pc.productCode,
       name: `${pc.product.name} (${pc.color.name})`,
       price: Number(pc.price),
       imageUrl: pc.product.imageUrl,
       stock: pc.stock,
-      brandId: pc.product.brand.id,
-      brandName: pc.product.brand.name,
-      categoryId: pc.product.category.id,
-      categoryName: pc.product.category.name,
+      brandId: brand.id,
+      brandName: brand.name,
+      categoryId: category.id,
+      categoryName: category.name,
     };
   }
 
