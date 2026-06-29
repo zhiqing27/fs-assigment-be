@@ -2,11 +2,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
 
 @Entity('brands')
 export class Brand {
@@ -27,7 +25,4 @@ export class Brand {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-
-  @OneToMany(() => Product, (product) => product.brand, { cascade: true })
-  products!: Product[];
 }

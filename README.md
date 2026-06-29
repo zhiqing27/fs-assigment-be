@@ -41,8 +41,11 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 
 ### Design Decisions
 
-- **Price and stock live on `product_colors`, not `products`.**  
-  Each variant (color) has its own price and stock. The listing page queries `product_colors` directly — one card per variant.
+- **Products link to `brand_categories`, not directly to brands or categories.**  
+  A single FK (`brandCategoryId`) enforces that every product has both a valid brand and a valid category. Brand/category filters in the listing query both resolve through this join.
+
+- **Price, stock, and productCode live on `product_colors`, not `products`.**  
+  Each variant (color) has its own price, stock, and code (e.g. `P001-BLK`). The listing page queries `product_colors` directly — one card per variant.
 
 - **One order = one product-color variant.**  
   Each order has exactly one `order_items` row with only `productColorId` — product is resolved via `product_colors.productId`, no redundant FK on `order_items`.
@@ -88,17 +91,18 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
-| productCode | integer | auto-increment, formatted as `P0001-001` in API responses |
 | name | varchar(255) | indexed |
 | description | text | nullable |
 | imageUrl | varchar(255) | nullable |
-| brandId | uuid FK → brands | CASCADE delete, indexed |
-| categoryId | uuid FK → categories | RESTRICT delete, indexed |
+| brandCategoryId | uuid FK → brand_categories | RESTRICT delete, indexed |
+
+Products link to `brand_categories` (not directly to brands/categories), so every product is guaranteed to have both a valid brand and category.
 
 #### `product_colors` *(one row per product × color variant)*
 | column | type | notes |
 |---|---|---|
 | id | uuid PK | |
+| productCode | varchar(20) | unique e.g. `P001-BLK` |
 | productId | uuid FK → products | CASCADE delete |
 | colorId | uuid FK → colors | RESTRICT delete |
 | price | decimal(10,2) | variant price |
@@ -129,15 +133,15 @@ All endpoints require the `x-api-key` header (value from `API_KEY` in `.env`).
 
 ```
 categories ←── brand_categories ──→ brands
-                                       │
-                                    products (serialId → productCode e.g. P0001-001)
-                                       │
-                          product_colors (price, stock)
-                               ↑              ↑
-                           colorId        productId
-                           (colors)
+                       │
+                    products
+                       │
+          product_colors (productCode, price, stock)
+               ↑              ↑
+           colorId        productId
+           (colors)
 
-orders ──── order_items ──→ product_colors (product variants)
+orders ──── order_items ──→ product_colors
 ```
 
 ---

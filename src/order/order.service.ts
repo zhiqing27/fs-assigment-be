@@ -64,7 +64,7 @@ export class OrderService {
         id: order.id,
         orderId: order.orderNumber,
         productId: pc?.productId ?? '',
-        productCode: pc?.product?.productCode ?? '',
+        productCode: pc?.productCode ?? '',
         productName: item?.productColor?.product?.name ?? '',
         productColor: item?.productColor?.color?.name ?? '',
         currentStock: item?.productColor?.stock ?? 0,

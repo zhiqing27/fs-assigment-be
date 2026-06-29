@@ -19,6 +19,9 @@ export class ProductColor {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column({ type: 'varchar', length: 20, unique: true })
+  productCode!: string;
+
   @Column({ type: 'integer', default: 0 })
   stock!: number;
 
